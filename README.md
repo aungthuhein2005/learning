@@ -7,8 +7,7 @@ Mathematics, and Data Engineering — notes while learning, experiments actually
 once an idea is worth writing up properly.
 
 This is not a blog and not a traditional portfolio. It's organized by topic, not by date. See
-[`/about`](https://aungthuhein2005.github.io/learning/about) and [`/now`](https://aungthuhein2005.github.io/learning/now)
-once deployed.
+[`/about`](https://aungthuhein2005.github.io/learning/about) once deployed.
 
 ## Stack
 
@@ -61,7 +60,7 @@ Notes are addressed by category, not by the broader "area" grouping used only fo
 /tags, /tags/<tag>
 /open-questions
 /activity                           — timeline generated from content dates
-/now, /about, /search
+/about, /search
 ```
 
 The area → category taxonomy (which categories belong to which of the four learning areas) is defined
