@@ -1,0 +1,25 @@
+---
+import { withBase } from '../lib/url';
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  eyebrow?: string;
+  meta?: string;
+}
+
+const { href, title, description, eyebrow, meta } = Astro.props;
+---
+
+<a
+  href={withBase(href)}
+  class="group block rounded-lg border border-[var(--color-border)] p-5 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-subtle)] transition-colors"
+>
+  {eyebrow && (
+    <p class="font-mono text-[0.72rem] uppercase tracking-wide text-[var(--color-accent)] mb-1.5">{eyebrow}</p>
+  )}
+  <h3 class="font-semibold text-[var(--color-fg)] group-hover:underline underline-offset-4">{title}</h3>
+  <p class="mt-1.5 text-sm text-[var(--color-fg-muted)] leading-relaxed">{description}</p>
+  {meta && <p class="mt-3 font-mono text-[0.72rem] text-[var(--color-fg-faint)]">{meta}</p>}
+</a>

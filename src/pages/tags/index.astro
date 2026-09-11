@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublished } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+const [notes, experiments, articles, projects] = await Promise.all([
+  getPublished('notes'),
+  getPublished('experiments'),
+  getPublished('articles'),
+  getPublished('projects'),
+]);
+
+const counts = new Map<string, number>();
+for (const entry of [...notes, ...experiments, ...articles, ...projects]) {
+  for (const tag of entry.data.tags ?? []) {
+    counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+}
+const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<BaseLayout title="Tags" description="Browse Learning Lab content by tag.">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Tags</h1>
+    <div class="mt-8 flex flex-wrap gap-2.5">
+      {tags.map(([tag, count]) => (
+        <a
+          href={withBase(`/tags/${tag}`)}
+          class="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border-strong)] px-3.5 py-1.5 font-mono text-sm hover:bg-[var(--color-bg-subtle)]"
+        >
+          {tag}
+          <span class="text-[var(--color-fg-faint)]">{count}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

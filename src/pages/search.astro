@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
+---
+
+<BaseLayout
+  title="Search"
+  description="Search notes, experiments, articles, and projects on Learning Lab."
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight mb-6">Search</h1>
+    <div id="search"></div>
+    <noscript>
+      <p class="text-[var(--color-fg-muted)]">Search requires JavaScript. Browse via the <a href={withBase('/learn')} class="text-[var(--color-accent)] hover:underline">Learn</a> section instead.</p>
+    </noscript>
+    <p id="search-unavailable" class="hidden text-sm text-[var(--color-fg-faint)]">
+      Search index isn't available in dev mode — it's generated during <code>npm run build</code>. Run a
+      production build and preview it to try search locally.
+    </p>
+  </div>
+
+  <script is:inline define:vars={{ base: import.meta.env.BASE_URL }}>
+    (async function () {
+      const baseClean = base.replace(/\/$/, '');
+      try {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = `${baseClean}/pagefind/pagefind-ui.css`;
+        document.head.appendChild(link);
+
+        const mod = await import(/* @vite-ignore */ `${baseClean}/pagefind/pagefind-ui.js`);
+        const PagefindUI = mod.PagefindUI ?? window.PagefindUI;
+        new PagefindUI({ element: '#search', showSubResults: true, bundlePath: `${baseClean}/pagefind/` });
+      } catch (err) {
+        document.getElementById('search-unavailable')?.classList.remove('hidden');
+      }
+    })();
+  </script>
+</BaseLayout>

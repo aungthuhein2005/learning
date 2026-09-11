@@ -1,0 +1,34 @@
+---
+const links = [
+  { label: 'GitHub', href: 'https://github.com/aungthuhein2005' },
+  { label: 'BurmeseNLP', href: 'https://github.com/aungthuhein2005/BurmeseNLP' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/aungthuhein' },
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-[var(--color-border)] mt-16">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 flex flex-col sm:flex-row gap-6 sm:justify-between text-sm">
+    <div class="text-[var(--color-fg-muted)] max-w-md">
+      <p class="font-mono text-[var(--color-fg)]">Learning Lab</p>
+      <p class="mt-1">
+        Notes: <a class="underline hover:text-[var(--color-fg)]" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        Code: <a class="underline hover:text-[var(--color-fg)]" href="https://github.com/aungthuhein2005/learning/blob/main/LICENSE">MIT</a>.
+      </p>
+      <p class="mt-1">&copy; {year} Aung Thu Hein.</p>
+    </div>
+    <nav class="flex gap-4 sm:gap-6 flex-wrap" aria-label="External links">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] underline underline-offset-4"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</footer>

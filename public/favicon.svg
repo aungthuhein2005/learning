@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6" fill="#fff" stroke="#111" />
+  <text x="16" y="22" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="15" font-weight="700" text-anchor="middle" fill="#111">LL</text>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      rect { fill: #0b0b0d; stroke: #e9e9eb; }
+      text { fill: #e9e9eb; }
+    }
+  </style>
+</svg>

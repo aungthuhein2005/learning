@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const updated = 'September 11, 2026';
+
+const sections = [
+  {
+    title: 'Learning',
+    items: [
+      'Gradient-based optimization and how it shows up beyond linear regression',
+      'Transformer internals — attention, positional encoding, tokenization tradeoffs',
+      'Distributed systems fundamentals (consensus, replication) for the data engineering track',
+    ],
+  },
+  {
+    title: 'Building',
+    items: [
+      'BurmeseNLP — expanding POS tagging coverage and cleaning up the training pipeline',
+      'This site — filling in the DSA and mathematics sections',
+    ],
+  },
+  {
+    title: 'Writing',
+    items: [
+      'A note on evaluating sequence labeling models with small, noisy datasets',
+      'An article on how tokenizer vocabulary size affects low-resource languages',
+    ],
+  },
+  {
+    title: 'Research',
+    items: [
+      'Why XLM-R generalizes unevenly across Burmese syllable structures',
+      'Whether pseudo-labeling is worth the risk for POS tagging with very little labeled data',
+    ],
+  },
+];
+---
+
+<BaseLayout title="Now" description="What I'm learning and building right now.">
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">What I'm learning and building right now.</h1>
+    <p class="mt-2 text-sm text-[var(--color-fg-faint)] font-mono">Last updated {updated}</p>
+
+    <div class="mt-10 space-y-10">
+      {sections.map((section) => (
+        <section>
+          <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-3">{section.title}</h2>
+          <ul class="space-y-2 list-disc pl-5 text-[var(--color-fg)]">
+            {section.items.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

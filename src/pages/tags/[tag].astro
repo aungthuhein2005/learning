@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { getPublished, noteHref } from '../../lib/content';
+import { TAG_SLUGS } from '../../lib/taxonomy';
+
+export async function getStaticPaths() {
+  return TAG_SLUGS.map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+
+const [notes, experiments, articles, projects] = await Promise.all([
+  getPublished('notes'),
+  getPublished('experiments'),
+  getPublished('articles'),
+  getPublished('projects'),
+]);
+
+const matchingNotes = notes.filter((n) => n.data.tags.includes(tag));
+const matchingExperiments = experiments.filter((e) => e.data.tags.includes(tag));
+const matchingArticles = articles.filter((a) => a.data.tags.includes(tag));
+const matchingProjects = projects.filter((p) => p.data.tags.includes(tag));
+---
+
+<BaseLayout title={`#${tag}`} description={`Notes, experiments, articles, and projects tagged "${tag}".`}>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <p class="font-mono text-sm text-[var(--color-fg-faint)] mb-1">Tag</p>
+    <h1 class="text-3xl font-bold tracking-tight">{tag}</h1>
+
+    <div class="mt-10 space-y-10">
+      {matchingNotes.length > 0 && (
+        <section>
+          <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-4">Notes</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {matchingNotes.map((n) => (
+              <ContentCard href={noteHref(n)} title={n.data.title} description={n.data.description} eyebrow={n.data.category} />
+            ))}
+          </div>
+        </section>
+      )}
+      {matchingExperiments.length > 0 && (
+        <section>
+          <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-4">Experiments</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {matchingExperiments.map((e) => (
+              <ContentCard href={`/experiments/${e.id}`} title={e.data.title} description={e.data.description} eyebrow="Experiment" />
+            ))}
+          </div>
+        </section>
+      )}
+      {matchingArticles.length > 0 && (
+        <section>
+          <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-4">Articles</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {matchingArticles.map((a) => (
+              <ContentCard href={`/articles/${a.id}`} title={a.data.title} description={a.data.description} eyebrow="Article" />
+            ))}
+          </div>
+        </section>
+      )}
+      {matchingProjects.length > 0 && (
+        <section>
+          <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-4">Projects</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {matchingProjects.map((p) => (
+              <ContentCard href={`/projects/${p.id}`} title={p.data.title} description={p.data.description} eyebrow="Project" />
+            ))}
+          </div>
+        </section>
+      )}
+      {matchingNotes.length + matchingExperiments.length + matchingArticles.length + matchingProjects.length === 0 && (
+        <p class="text-[var(--color-fg-faint)] italic">Nothing tagged "{tag}" yet.</p>
+      )}
+    </div>
+  </div>
+</BaseLayout>

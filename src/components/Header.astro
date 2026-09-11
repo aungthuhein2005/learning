@@ -1,0 +1,85 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { withBase } from '../lib/url';
+
+const navItems = [
+  { label: 'Learn', href: '/learn' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Experiments', href: '/experiments' },
+  { label: 'Articles', href: '/articles' },
+  { label: 'Resources', href: '/resources' },
+  { label: 'Now', href: '/now' },
+  { label: 'About', href: '/about' },
+];
+
+const path = Astro.url.pathname;
+function isActive(href: string) {
+  const target = withBase(href);
+  return path === target || path.startsWith(`${target}/`);
+}
+---
+
+<header class="border-b border-[var(--color-border)] bg-[var(--color-bg)] sticky top-0 z-40">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="flex h-16 items-center justify-between gap-4">
+      <a href={withBase('/')} class="flex flex-col leading-none shrink-0">
+        <span class="font-mono text-[0.95rem] font-semibold tracking-tight">Learning Lab</span>
+        <span class="hidden sm:block text-[0.7rem] text-[var(--color-fg-faint)] mt-0.5">
+          Learning Computer Science in public.
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-1 font-mono text-[0.82rem]" aria-label="Primary">
+        {navItems.map((item) => (
+          <a
+            href={withBase(item.href)}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            class={`px-2.5 py-1.5 rounded transition-colors ${
+              isActive(item.href)
+                ? 'text-[var(--color-fg)] bg-[var(--color-bg-subtle)]'
+                : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)]'
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <div class="flex items-center gap-1">
+        <a
+          href={withBase('/search')}
+          class="p-2 rounded text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)]"
+          aria-label="Search"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" />
+          </svg>
+        </a>
+        <ThemeToggle />
+        <details class="md:hidden relative">
+          <summary
+            class="list-none p-2 rounded cursor-pointer text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)]"
+            aria-label="Open menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </summary>
+          <nav
+            class="absolute right-0 top-full mt-1 w-56 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] shadow-lg py-2 font-mono text-sm"
+            aria-label="Primary"
+          >
+            {navItems.map((item) => (
+              <a
+                href={withBase(item.href)}
+                class="block px-4 py-2 text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)]"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </details>
+      </div>
+    </div>
+  </div>
+</header>

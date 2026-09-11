@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aungthuhein2005.github.io/learning/sitemap-index.xml

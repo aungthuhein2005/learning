@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const resources = await getCollection('resources');
+
+const typeOrder = ['book', 'course', 'documentation', 'paper', 'tool', 'dataset'] as const;
+const typeLabels: Record<(typeof typeOrder)[number], string> = {
+  book: 'Books',
+  course: 'Courses',
+  documentation: 'Documentation',
+  paper: 'Papers',
+  tool: 'Tools',
+  dataset: 'Datasets',
+};
+---
+
+<BaseLayout
+  title="Resources"
+  description="Books, courses, documentation, papers, tools, and datasets I actually use and recommend."
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Resources</h1>
+    <p class="mt-2 max-w-2xl text-[var(--color-fg-muted)]">
+      Things I've actually used, not a generic "awesome list." Each entry says why it's here.
+    </p>
+
+    <div class="mt-10 space-y-10">
+      {typeOrder.map((type) => {
+        const items = resources.filter((r) => r.data.type === type);
+        if (items.length === 0) return null;
+        return (
+          <section>
+            <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-4">{typeLabels[type]}</h2>
+            <ul class="space-y-4">
+              {items.map((item) => (
+                <li class="rounded-lg border border-[var(--color-border)] p-5">
+                  <a href={item.data.link} target="_blank" rel="noopener noreferrer" class="font-semibold hover:underline">
+                    {item.data.title} &#8599;
+                  </a>
+                  <p class="mt-1 text-sm text-[var(--color-fg-muted)]">{item.data.description}</p>
+                  <p class="mt-2 text-sm text-[var(--color-fg-faint)]"><span class="font-medium text-[var(--color-fg-muted)]">Why:</span> {item.data.why}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>

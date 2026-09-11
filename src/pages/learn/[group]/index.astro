@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LearnSidebar from '../../../components/LearnSidebar.astro';
+import ContentCard from '../../../components/ContentCard.astro';
+import { AREAS, getArea, getCategory, getAreaForCategory } from '../../../lib/taxonomy';
+import { getPublished, formatDate, noteHref } from '../../../lib/content';
+import { withBase } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  const areaPaths = AREAS.map((area) => ({ params: { group: area.slug }, props: { kind: 'area' as const } }));
+  const categoryPaths = AREAS.flatMap((area) =>
+    area.categories.map((category) => ({ params: { group: category.slug }, props: { kind: 'category' as const } }))
+  );
+  return [...areaPaths, ...categoryPaths];
+}
+
+const { group } = Astro.params;
+const { kind } = Astro.props;
+
+const notes = await getPublished('notes');
+---
+
+{kind === 'area' && (() => {
+  const area = getArea(group)!;
+  const notesByCategory = new Map(area.categories.map((c) => [c.slug, notes.filter((n) => n.data.category === c.slug)]));
+  return (
+    <BaseLayout title={area.label} description={area.description}>
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-8">
+        <aside class="hidden lg:block" data-pagefind-ignore>
+          <div class="sticky top-24">
+            <LearnSidebar />
+          </div>
+        </aside>
+        <div class="min-w-0">
+          <h1 class="text-3xl font-bold tracking-tight">{area.label}</h1>
+          <p class="mt-2 max-w-2xl text-[var(--color-fg-muted)]">{area.description}</p>
+
+          <div class="mt-10 space-y-10">
+            {area.categories.map((category) => {
+              const categoryNotes = notesByCategory.get(category.slug) ?? [];
+              return (
+                <section>
+                  <div class="flex items-baseline justify-between mb-3">
+                    <h2 class="text-lg font-semibold">
+                      <a href={withBase(`/learn/${category.slug}`)} class="hover:underline">{category.label}</a>
+                    </h2>
+                    <span class="font-mono text-[0.72rem] text-[var(--color-fg-faint)]">
+                      {categoryNotes.length} {categoryNotes.length === 1 ? 'note' : 'notes'}
+                    </span>
+                  </div>
+                  {categoryNotes.length > 0 ? (
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      {categoryNotes.map((note) => (
+                        <ContentCard
+                          href={noteHref(note)}
+                          title={note.data.title}
+                          description={note.data.description}
+                          meta={formatDate(note.data.date)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p class="text-sm text-[var(--color-fg-faint)] italic">No notes here yet.</p>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </BaseLayout>
+  );
+})()}
+
+{kind === 'category' && (() => {
+  const category = getCategory(group)!;
+  const area = getAreaForCategory(group)!;
+  const categoryNotes = notes
+    .filter((n) => n.data.category === group)
+    .sort((a, b) => a.data.title.localeCompare(b.data.title));
+  return (
+    <BaseLayout title={category.label} description={`Notes on ${category.label} — part of ${area.label}.`}>
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-8">
+        <aside class="hidden lg:block" data-pagefind-ignore>
+          <div class="sticky top-24">
+            <LearnSidebar activeCategory={category.slug} />
+          </div>
+        </aside>
+        <div class="min-w-0">
+          <p class="font-mono text-[0.78rem] text-[var(--color-fg-muted)] mb-2">
+            <a href={withBase(`/learn/${area.slug}`)} class="hover:underline">{area.label}</a>
+          </p>
+          <h1 class="text-3xl font-bold tracking-tight">{category.label}</h1>
+
+          {categoryNotes.length > 0 ? (
+            <div class="mt-8 grid sm:grid-cols-2 gap-4">
+              {categoryNotes.map((note) => (
+                <ContentCard
+                  href={noteHref(note)}
+                  title={note.data.title}
+                  description={note.data.description}
+                  eyebrow={note.data.difficulty}
+                  meta={formatDate(note.data.date)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p class="mt-8 text-sm text-[var(--color-fg-faint)] italic">
+              No notes here yet — this category is reserved for future notes.
+            </p>
+          )}
+        </div>
+      </div>
+    </BaseLayout>
+  );
+})()}

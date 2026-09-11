@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { AREAS } from '../../lib/taxonomy';
+import { getPublished } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+const notes = await getPublished('notes');
+const countByCategory = new Map<string, number>();
+for (const note of notes) {
+  countByCategory.set(note.data.category, (countByCategory.get(note.data.category) ?? 0) + 1);
+}
+---
+
+<BaseLayout
+  title="Learn"
+  description="Notes organized by topic across Computer Science, AI & Machine Learning, Mathematics, and Data Engineering."
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Learn</h1>
+    <p class="mt-2 max-w-2xl text-[var(--color-fg-muted)]">
+      Notes organized by topic, not by date. Pick an area to see what's written so far — most categories are
+      still thin, since I add notes as I actually work through the material.
+    </p>
+
+    <div class="mt-10 grid sm:grid-cols-2 gap-6">
+      {AREAS.map((area) => {
+        const total = area.categories.reduce((sum, c) => sum + (countByCategory.get(c.slug) ?? 0), 0);
+        return (
+          <a
+            href={withBase(`/learn/${area.slug}`)}
+            class="block rounded-lg border border-[var(--color-border)] p-6 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-subtle)] transition-colors"
+          >
+            <h2 class="text-xl font-semibold">{area.label}</h2>
+            <p class="mt-1.5 text-sm text-[var(--color-fg-muted)]">{area.description}</p>
+            <ul class="mt-4 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[0.75rem] text-[var(--color-fg-faint)]">
+              {area.categories.map((c) => (
+                <li>{c.label}{countByCategory.get(c.slug) ? ` (${countByCategory.get(c.slug)})` : ''}</li>
+              ))}
+            </ul>
+            <p class="mt-4 font-mono text-[0.72rem] text-[var(--color-fg-faint)]">
+              {total} {total === 1 ? 'note' : 'notes'}
+            </p>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>

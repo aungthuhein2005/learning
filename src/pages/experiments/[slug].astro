@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import DocLayout from '../../layouts/DocLayout.astro';
+import { getPublished, getRelatedNotes, formatDate, noteHref } from '../../lib/content';
+import { withBase } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const experiments = await getPublished('experiments');
+  return experiments.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const relatedNotes = await getRelatedNotes(entry.data.relatedNotes);
+---
+
+<DocLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  eyebrow="Experiment"
+  metaLine={`${entry.data.status} · Updated ${formatDate(entry.data.updated ?? entry.data.date)}`}
+  headings={headings}
+  tags={entry.data.tags}
+>
+  <Content />
+  <Fragment slot="after">
+    {relatedNotes.length > 0 && (
+      <div class="pt-6 border-t border-[var(--color-border)]">
+        <p class="font-mono text-[0.72rem] uppercase tracking-wide text-[var(--color-fg-faint)] mb-3">Related notes</p>
+        <ul class="space-y-1.5">
+          {relatedNotes.map((note) => (
+            <li><a href={withBase(noteHref(note))} class="text-[var(--color-accent)] hover:underline">{note.data.title}</a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </Fragment>
+</DocLayout>

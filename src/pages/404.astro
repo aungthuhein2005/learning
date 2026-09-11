@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/url';
+---
+
+<BaseLayout title="Page not found" description="This page doesn't exist.">
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 py-24 text-center">
+    <p class="font-mono text-sm text-[var(--color-fg-faint)]">404</p>
+    <h1 class="mt-2 text-2xl font-bold">Nothing here.</h1>
+    <p class="mt-2 text-[var(--color-fg-muted)]">The page you're looking for doesn't exist or moved.</p>
+    <a href={withBase('/')} class="mt-6 inline-block text-[var(--color-accent)] hover:underline">Back to Learning Lab &rarr;</a>
+  </div>
+</BaseLayout>

@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { getPublished, byDateDesc, formatDate } from '../../lib/content';
+
+const articles = byDateDesc(await getPublished('articles'));
+---
+
+<BaseLayout
+  title="Articles"
+  description="Long-form, more personal writing on what I'm learning and building."
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Articles</h1>
+    <p class="mt-2 max-w-2xl text-[var(--color-fg-muted)]">
+      Longer, more narrative writing — the ideas that outgrew a note.
+    </p>
+
+    <div class="mt-10 grid sm:grid-cols-2 gap-4">
+      {articles.map((article) => (
+        <ContentCard
+          href={`/articles/${article.id}`}
+          title={article.data.title}
+          description={article.data.description}
+          meta={formatDate(article.data.date)}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

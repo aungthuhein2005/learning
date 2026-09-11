@@ -1,0 +1,73 @@
+---
+import { AREAS } from '../lib/taxonomy';
+import { getPublished } from '../lib/content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  activeCategory?: string;
+  activeNoteId?: string;
+}
+
+const { activeCategory, activeNoteId } = Astro.props;
+
+const notes = await getPublished('notes');
+const notesByCategory = new Map<string, typeof notes>();
+for (const note of notes) {
+  const list = notesByCategory.get(note.data.category) ?? [];
+  list.push(note);
+  notesByCategory.set(note.data.category, list);
+}
+for (const list of notesByCategory.values()) {
+  list.sort((a, b) => a.data.title.localeCompare(b.data.title));
+}
+---
+
+<nav aria-label="Learn navigation" class="text-sm space-y-6">
+  {AREAS.map((area) => (
+    <div>
+      <p class="font-mono text-[0.7rem] uppercase tracking-wide text-[var(--color-fg-faint)] mb-2">
+        <a href={withBase(`/learn/${area.slug}`)} class="hover:text-[var(--color-fg)]">{area.label}</a>
+      </p>
+      <ul class="space-y-0.5">
+        {area.categories.map((category) => {
+          const isActiveCategory = category.slug === activeCategory;
+          const categoryNotes = notesByCategory.get(category.slug) ?? [];
+          return (
+            <li>
+              <a
+                href={withBase(`/learn/${category.slug}`)}
+                aria-current={isActiveCategory ? 'page' : undefined}
+                class={`block rounded px-2 py-1 ${
+                  isActiveCategory
+                    ? 'text-[var(--color-fg)] bg-[var(--color-bg-subtle)] font-medium'
+                    : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-bg-subtle)]'
+                }`}
+              >
+                {category.label}
+              </a>
+              {isActiveCategory && categoryNotes.length > 0 && (
+                <ul class="mt-0.5 ml-2 border-l border-[var(--color-border)] space-y-0.5">
+                  {categoryNotes.map((note) => (
+                    <li>
+                      <a
+                        href={withBase(`/learn/${category.slug}/${note.id.split('/').pop()}`)}
+                        aria-current={note.id.split('/').pop() === activeNoteId ? 'page' : undefined}
+                        class={`block pl-3 pr-2 py-1 -ml-px border-l ${
+                          note.id.split('/').pop() === activeNoteId
+                            ? 'border-[var(--color-accent)] text-[var(--color-fg)] font-medium'
+                            : 'border-transparent text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]'
+                        }`}
+                      >
+                        {note.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  ))}
+</nav>

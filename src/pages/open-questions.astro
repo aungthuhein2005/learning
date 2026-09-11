@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { getRelatedNotes, noteHref } from '../lib/content';
+import { withBase } from '../lib/url';
+
+const questions = await getCollection('questions');
+const withRelated = await Promise.all(
+  questions.map(async (q) => ({ q, related: await getRelatedNotes(q.data.relatedNotes) }))
+);
+
+const statusOrder = ['open', 'researching', 'answered'] as const;
+const statusLabel: Record<(typeof statusOrder)[number], string> = {
+  open: 'Open',
+  researching: 'Researching',
+  answered: 'Answered',
+};
+---
+
+<BaseLayout
+  title="Open Questions"
+  description="Things I don't understand yet — questions that may later become research, experiments, or articles."
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Open Questions</h1>
+    <p class="mt-2 text-[var(--color-fg-muted)]">
+      Things I don't understand yet. The idea is that a question here can turn into research, then an
+      experiment, then an article — not that it gets answered immediately.
+    </p>
+
+    <div class="mt-10 space-y-8">
+      {statusOrder.map((status) => {
+        const items = withRelated.filter(({ q }) => q.data.status === status);
+        if (items.length === 0) return null;
+        return (
+          <section>
+            <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-3">{statusLabel[status]}</h2>
+            <ul class="space-y-4">
+              {items.map(({ q, related }) => (
+                <li class="rounded-lg border border-[var(--color-border)] p-4">
+                  <p>{q.data.question}</p>
+                  {related.length > 0 && (
+                    <p class="mt-2 text-sm text-[var(--color-fg-faint)]">
+                      Related:{' '}
+                      {related.map((note, i) => (
+                        <>
+                          <a href={withBase(noteHref(note))} class="text-[var(--color-accent)] hover:underline">{note.data.title}</a>
+                          {i < related.length - 1 ? ', ' : ''}
+                        </>
+                      ))}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>

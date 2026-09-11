@@ -1,0 +1,16 @@
+---
+interface Props {
+  label?: string;
+  kind?: 'note' | 'misunderstood' | 'question';
+}
+
+const { label, kind = 'note' } = Astro.props;
+const defaultLabel = kind === 'misunderstood' ? 'What I misunderstood' : kind === 'question' ? 'Open question' : 'Note';
+---
+
+<div class:list={['callout', kind === 'misunderstood' && 'callout-misunderstood']}>
+  <span class="callout-label">{label ?? defaultLabel}</span>
+  <div class="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+    <slot />
+  </div>
+</div>

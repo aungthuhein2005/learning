@@ -1,0 +1,55 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import Tag from '../components/Tag.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+  metaLine?: string;
+  headings: { depth: number; slug: string; text: string }[];
+  tags?: string[];
+}
+
+const { title, description, eyebrow, metaLine, headings, tags = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-8 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_220px] gap-8">
+    <article class="min-w-0 max-w-3xl">
+      {(eyebrow || metaLine) && (
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[0.78rem] text-[var(--color-fg-muted)] mb-4">
+          {eyebrow && <span class="text-[var(--color-accent)]">{eyebrow}</span>}
+          {eyebrow && metaLine && <span aria-hidden="true">·</span>}
+          {metaLine && <span>{metaLine}</span>}
+        </div>
+      )}
+
+      <h1 class="text-3xl font-bold tracking-tight mb-2">{title}</h1>
+      <p class="text-lg text-[var(--color-fg-muted)] mb-6">{description}</p>
+
+      <slot name="links" />
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      {tags.length > 0 && (
+        <div class="mt-10 flex flex-wrap gap-2">
+          {tags.map((tag) => <Tag tag={tag} />)}
+        </div>
+      )}
+
+      <div class="mt-10">
+        <slot name="after" />
+      </div>
+    </article>
+
+    <aside class="hidden xl:block" data-pagefind-ignore>
+      <div class="sticky top-24">
+        <TableOfContents headings={headings} />
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

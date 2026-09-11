@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getActivityLog, groupActivityByMonth, formatDate } from '../lib/content';
+import { withBase } from '../lib/url';
+
+const items = await getActivityLog();
+const grouped = groupActivityByMonth(items);
+
+const kindLabel: Record<string, string> = {
+  note: 'Note',
+  experiment: 'Experiment',
+  article: 'Article',
+  project: 'Project',
+};
+---
+
+<BaseLayout title="Activity" description="A timeline of notes, experiments, articles, and projects, generated from content metadata.">
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Activity</h1>
+    <p class="mt-2 text-[var(--color-fg-muted)]">
+      Generated from each page's <code>date</code>/<code>updated</code> frontmatter — nothing here is maintained by hand.
+    </p>
+
+    <div class="mt-10 space-y-10">
+      {[...grouped.entries()].map(([month, monthItems]) => (
+        <section>
+          <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-3">{month}</h2>
+          <ul class="space-y-2">
+            {monthItems.map((item) => (
+              <li class="flex items-baseline gap-3 text-sm">
+                <span class="font-mono text-[var(--color-fg-faint)] w-20 shrink-0">{formatDate(item.date)}</span>
+                <span>
+                  {item.action} <span class="text-[var(--color-fg-faint)]">({kindLabel[item.kind]}):</span>{' '}
+                  <a href={withBase(item.href)} class="text-[var(--color-accent)] hover:underline">{item.title}</a>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

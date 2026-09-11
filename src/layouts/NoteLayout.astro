@@ -1,0 +1,86 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import LearnSidebar from '../components/LearnSidebar.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import Tag from '../components/Tag.astro';
+import { getCategory } from '../lib/taxonomy';
+import { formatDate, readingTime, noteHref } from '../lib/content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  entry: CollectionEntry<'notes'>;
+  headings: { depth: number; slug: string; text: string }[];
+  relatedNotes: CollectionEntry<'notes'>[];
+  body: string;
+}
+
+const { entry, headings, relatedNotes, body } = Astro.props;
+const { data } = entry;
+const noteSlug = entry.id.split('/').pop()!;
+const category = getCategory(data.category);
+const minutes = readingTime(body);
+---
+
+<BaseLayout title={data.title} description={data.description} type="article">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_200px] gap-8">
+    <aside class="hidden lg:block" data-pagefind-ignore>
+      <div class="sticky top-24">
+        <LearnSidebar activeCategory={data.category} activeNoteId={noteSlug} />
+      </div>
+    </aside>
+
+    <article class="min-w-0">
+      <details class="lg:hidden mb-6 rounded-lg border border-[var(--color-border)]">
+        <summary class="cursor-pointer px-4 py-2.5 font-mono text-sm text-[var(--color-fg-muted)]">Browse Learn</summary>
+        <div class="px-4 pb-4">
+          <LearnSidebar activeCategory={data.category} activeNoteId={noteSlug} />
+        </div>
+      </details>
+
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[0.78rem] text-[var(--color-fg-muted)] mb-4">
+        <a href={withBase(`/learn/${data.category}`)} class="text-[var(--color-accent)] hover:underline">{category?.label ?? data.category}</a>
+        <span aria-hidden="true">·</span>
+        <span class="capitalize">{data.difficulty}</span>
+        <span aria-hidden="true">·</span>
+        <span>{minutes}</span>
+        <span aria-hidden="true">·</span>
+        <span>Updated {formatDate(data.updated ?? data.date)}</span>
+      </div>
+
+      <h1 class="text-3xl font-bold tracking-tight mb-2">{data.title}</h1>
+      <p class="text-lg text-[var(--color-fg-muted)] mb-8">{data.description}</p>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      {data.tags.length > 0 && (
+        <div class="mt-10 flex flex-wrap gap-2">
+          {data.tags.map((tag) => <Tag tag={tag} />)}
+        </div>
+      )}
+
+      {relatedNotes.length > 0 && (
+        <div class="mt-10 pt-6 border-t border-[var(--color-border)]">
+          <p class="font-mono text-[0.72rem] uppercase tracking-wide text-[var(--color-fg-faint)] mb-3">Related notes</p>
+          <ul class="space-y-1.5">
+            {relatedNotes.map((related) => (
+              <li>
+                <a href={withBase(noteHref(related))} class="text-[var(--color-accent)] hover:underline">
+                  {related.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </article>
+
+    <aside class="hidden xl:block" data-pagefind-ignore>
+      <div class="sticky top-24">
+        <TableOfContents headings={headings} />
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

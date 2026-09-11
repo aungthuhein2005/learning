@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const links = [
+  { label: 'GitHub', href: 'https://github.com/aungthuhein2005' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/aungthuhein' },
+  { label: 'Medium', href: 'https://medium.com/@aungthuhein' },
+  { label: 'BurmeseNLP', href: 'https://github.com/aungthuhein2005/BurmeseNLP' },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Aung Thu Hein — a Computer Science student learning and building in public."
+>
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">About</h1>
+
+    <div class="prose mt-8">
+      <p>
+        I'm a Computer Science student interested in AI, machine learning, NLP, and software engineering.
+        I build open-source software and document what I learn.
+      </p>
+      <p>
+        This site, Learning Lab, is where I keep that documentation — notes while I'm learning something,
+        write-ups of experiments I've actually run, and longer articles once an idea is worth explaining
+        properly. I'm not writing as an expert. Most of this is me working through material for the first
+        time and being honest about what I got wrong along the way.
+      </p>
+      <p>
+        My main project is <a href="https://github.com/aungthuhein2005/BurmeseNLP">BurmeseNLP</a>, an open-source
+        toolkit for Burmese natural language processing — a genuinely low-resource language where a lot of
+        basic NLP infrastructure still doesn't exist.
+      </p>
+      <p>
+        Outside of NLP, I'm interested in the fundamentals underneath it: data structures and algorithms,
+        the mathematics that makes ML work, and the data engineering systems that make ML work at scale.
+      </p>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="font-mono text-xs uppercase tracking-wide text-[var(--color-fg-faint)] mb-3">Elsewhere</h2>
+      <ul class="flex flex-wrap gap-3">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-block rounded-md border border-[var(--color-border-strong)] px-3.5 py-2 text-sm hover:bg-[var(--color-bg-subtle)]"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</BaseLayout>

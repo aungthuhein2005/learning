@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { getPublished, byDateDesc, formatDate } from '../../lib/content';
+
+const experiments = byDateDesc(await getPublished('experiments'));
+---
+
+<BaseLayout
+  title="Experiments"
+  description="Things I actually built or tested — questions, methods, results, and what failed along the way."
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-12">
+    <h1 class="text-3xl font-bold tracking-tight">Experiments</h1>
+    <p class="mt-2 max-w-2xl text-[var(--color-fg-muted)]">
+      Things I actually built or tested. Each one records the question, the method, the results, and — just as
+      importantly — what failed.
+    </p>
+
+    <div class="mt-10 grid sm:grid-cols-2 gap-4">
+      {experiments.map((exp) => (
+        <ContentCard
+          href={`/experiments/${exp.id}`}
+          title={exp.data.title}
+          description={exp.data.description}
+          eyebrow={exp.data.status}
+          meta={formatDate(exp.data.date)}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
