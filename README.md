@@ -74,8 +74,9 @@ right `content/` folder is enough — pages are generated automatically at build
 
 ### Add a note
 
-Create a file under `content/notes/<category>/<slug>.md`, where `<category>` is one of the category slugs
-in `src/lib/taxonomy.ts` (`dsa`, `machine-learning`, `linear-algebra`, `big-data`, etc.):
+Copy [`templates/note.md`](templates/note.md) to `content/notes/<category>/<slug>.md`, where `<category>` is
+one of the category slugs in `src/lib/taxonomy.ts` (`dsa`, `machine-learning`, `linear-algebra`, `big-data`,
+etc.):
 
 ```md
 ---
