@@ -8,6 +8,7 @@ tech:
   - XLM-R
 status: active
 github: https://github.com/aungthuhein2005/BurmeseNLP
+live: https://aungthuhein2005.github.io/burmesenlp/
 date: 2026-04-01
 updated: 2026-05-30
 tags:
